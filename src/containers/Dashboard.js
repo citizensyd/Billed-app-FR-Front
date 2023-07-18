@@ -147,8 +147,13 @@ export default class {
     }
 
     bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-    })
+      const element = $(`#open-bill${bill.id}`);
+      if (!element.data('eventSet')) {
+        element.click((e) => this.handleEditTicket(e, bill, bills));
+        element.data('eventSet', true);
+      }
+    });
+    
 
     return bills
 

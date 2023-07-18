@@ -9,6 +9,7 @@ export default class Logout {
   }
   
   handleClick = (e) => {
+    console.log("handleClick clear local storage");
     this.localStorage.clear()
     this.onNavigate(ROUTES_PATH['Login'])
   }
