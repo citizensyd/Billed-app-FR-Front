@@ -39,8 +39,6 @@ export default class {
       .list()
       .then((snapshot) => {
         const bills = snapshot;
-        console.log(bills);
-          console.log("length", bills.length);
           return bills;
         });
     }

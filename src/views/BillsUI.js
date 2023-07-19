@@ -56,29 +56,24 @@ export default ({ data: bills, loading, error }) => {
     return dateB - dateA;
   };
 
-  if (bills){
-  bills.sort(sortByDate);
-  bills.map((doc) => {
-    console.log(doc);
-    try {
-      return {
-        ...doc,
-        date: formatDate(doc.date),
-        status: formatStatus(doc.status),
-      };
-    } catch (e) {
-      // if for some reason, corrupted data was introduced, we manage here failing formatDate function
-      // log the error and return unformatted date in that case
-      console.log(e, "for", doc);
-      return {
-        ...doc,
-        date: doc.date,
-        status: formatStatus(doc.status),
-      };
-    }
-  });
-}
-
+  if (bills) {
+    bills.sort(sortByDate);
+    bills = bills.map((doc) => {
+      try {
+        return {
+          ...doc,
+          date: formatDate(doc.date),
+          status: formatStatus(doc.status),
+        };
+      } catch (error) {
+        console.error(`Une erreur s'est produite lors de la mise en forme des données de la facture: ${error}`);
+        // Vous pouvez choisir de gérer l'erreur ici, par exemple en renvoyant le document original
+        // ou en renvoyant un document modifié avec des valeurs par défaut pour la date et le statut
+        return doc;
+      }
+    });
+  }
+  
   return `
     <div class='layout'>
       ${VerticalLayout(120)}
