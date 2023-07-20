@@ -20,7 +20,7 @@ export const filteredBills = (data, status) => {
         const userEmail = JSON.parse(localStorage.getItem("user")).email
         selectCondition =
           (bill.status === status) &&
-          ![...USERS_TEST, userEmail].includes(bill.email)
+           ![...USERS_TEST, userEmail].includes(bill.email) 
       }
 
       return selectCondition
@@ -131,7 +131,6 @@ export default class {
   }
 
   handleShowTickets(e, bills, index) {
-    console.log("handleShowTickets");
     if (this.counter === undefined || this.index !== index) this.counter = 0
     if (this.index === undefined || this.index !== index) this.index = index
     if (this.counter % 2 === 0) {

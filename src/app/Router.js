@@ -32,6 +32,7 @@ export default () => {
       divIcon2.classList.remove('active-icon')
       const bills = new Bills({ document, onNavigate, store, localStorage  })
       bills.getBills().then(data => {
+        console.log(data);
         rootDiv.innerHTML = BillsUI({ data })
         const divIcon1 = document.getElementById('layout-icon1')
         const divIcon2 = document.getElementById('layout-icon2')
@@ -52,6 +53,7 @@ export default () => {
       rootDiv.innerHTML = ROUTES({ pathname, loading: true })
       const bills = new Dashboard({ document, onNavigate, store, bills: [], localStorage })
       bills.getBillsAllUsers().then(bills => {
+        console.log(bills);
           rootDiv.innerHTML = DashboardUI({data: {bills}})
           new Dashboard({document, onNavigate, store, bills, localStorage})
         }).catch(error => {
@@ -103,6 +105,7 @@ export default () => {
       rootDiv.innerHTML = ROUTES({ pathname: window.location.hash, loading: true })
       const bills = new Dashboard({ document, onNavigate, store, bills: [], localStorage })
       bills.getBillsAllUsers().then(bills => {
+        console.log(bills);
         rootDiv.innerHTML = DashboardUI({ data: { bills } })
         new Dashboard({ document, onNavigate, store, bills, localStorage })
       }).catch(error => {

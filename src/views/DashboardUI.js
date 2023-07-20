@@ -12,6 +12,7 @@ export default ({ data, loading, error }) => {
   } else if (error) {
     return ErrorPage(error)
   }
+  console.log(data);
 
   return (`
     <div class='layout'>
