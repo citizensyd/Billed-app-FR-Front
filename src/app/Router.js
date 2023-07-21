@@ -53,7 +53,6 @@ export default () => {
       rootDiv.innerHTML = ROUTES({ pathname, loading: true })
       const bills = new Dashboard({ document, onNavigate, store, bills: [], localStorage })
       bills.getBillsAllUsers().then(bills => {
-        console.log(bills);
           rootDiv.innerHTML = DashboardUI({data: {bills}})
           new Dashboard({document, onNavigate, store, bills, localStorage})
         }).catch(error => {
@@ -105,7 +104,6 @@ export default () => {
       rootDiv.innerHTML = ROUTES({ pathname: window.location.hash, loading: true })
       const bills = new Dashboard({ document, onNavigate, store, bills: [], localStorage })
       bills.getBillsAllUsers().then(bills => {
-        console.log(bills);
         rootDiv.innerHTML = DashboardUI({ data: { bills } })
         new Dashboard({ document, onNavigate, store, bills, localStorage })
       }).catch(error => {
