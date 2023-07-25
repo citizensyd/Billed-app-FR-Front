@@ -1,13 +1,11 @@
-import VerticalLayout from "./VerticalLayout.js";
-import ErrorPage from "./ErrorPage.js";
-import LoadingPage from "./LoadingPage.js";
-import { formatDate } from "../app/format.js";
-import { formatStatus } from "../app/format.js";
+import VerticalLayout from './VerticalLayout.js'
+import ErrorPage from "./ErrorPage.js"
+import LoadingPage from "./LoadingPage.js"
 
-import Actions from "./Actions.js";
+import Actions from './Actions.js'
 
 const row = (bill) => {
-  return `
+  return (`
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
@@ -18,15 +16,25 @@ const row = (bill) => {
         ${Actions(bill.fileUrl)}
       </td>
     </tr>
-    `;
-};
+    `)
+  }
 
-const rows = (data) => {
-  return data && data.length ? data.map((bill) => row(bill)).join("") : "";
-};
+  const rows = (data) => {
+    if (data && data.length) {
+      data.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+      });
+      return data.map(bill => row(bill)).join("");
+    } else {
+      return "";
+    }
+  }
 
 export default ({ data: bills, loading, error }) => {
-  const modal = () => `
+  
+  const modal = () => (`
     <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
@@ -41,40 +49,15 @@ export default ({ data: bills, loading, error }) => {
         </div>
       </div>
     </div>
-  `;
+  `)
 
   if (loading) {
-    return LoadingPage();
+    return LoadingPage()
   } else if (error) {
-    return ErrorPage(error);
-  }
-
-  // Custom comparison function for sorting by date
-  const sortByDate = (a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-    return dateB - dateA;
-  };
-
-  if (bills) {
-    bills.sort(sortByDate);
-    bills = bills.map((doc) => {
-      try {
-        return {
-          ...doc,
-          date: formatDate(doc.date),
-          status: formatStatus(doc.status),
-        };
-      } catch (error) {
-        console.error(`Une erreur s'est produite lors de la mise en forme des données de la facture: ${error}`);
-        // Vous pouvez choisir de gérer l'erreur ici, par exemple en renvoyant le document original
-        // ou en renvoyant un document modifié avec des valeurs par défaut pour la date et le statut
-        return doc;
-      }
-    });
+    return ErrorPage(error)
   }
   
-  return `
+  return (`
     <div class='layout'>
       ${VerticalLayout(120)}
       <div class='content'>
@@ -101,5 +84,6 @@ export default ({ data: bills, loading, error }) => {
         </div>
       </div>
       ${modal()}
-    </div>`;
-};
+    </div>`
+  )
+}
