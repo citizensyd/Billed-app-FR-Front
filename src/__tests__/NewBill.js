@@ -107,6 +107,7 @@ describe("Given I am connected as an employee", () => {
     });
   });
 });
+
 //POST
 describe("Given I am a user connected as Employee", () => {
   describe("When I navigate to new bill and post a new bill", () => {

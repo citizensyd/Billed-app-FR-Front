@@ -17,7 +17,7 @@ jest.mock("../app/store", () => mockStore);
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
-    test("Then bill icon in vertical layout should be highlighted", async () => {
+    test("Then bill icon in vertical layout should be highlighted", () => {
       Object.defineProperty(window, "localStorage", { value: localStorageMock });
       window.localStorage.setItem(
         "user",
@@ -30,18 +30,52 @@ describe("Given I am connected as an employee", () => {
       document.body.append(root);
       router();
       window.onNavigate(ROUTES_PATH.Bills);
-      await waitFor(() => screen.getByTestId("icon-window"));
+      waitFor(() => screen.getByTestId("icon-window"));
       const windowIcon = screen.getByTestId("icon-window");
       //to-do write expect expression
       expect(windowIcon.classList.contains("active-icon")).toBe(true);
     });
     test("Then bills should be ordered from earliest to latest", () => {
-      document.body.innerHTML = BillsUI({ data: bills })
-      const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
-      const antiChrono = (a, b) => ((a < b) ? 1 : -1)
-      const datesSorted = [...dates].sort(antiChrono)
-      expect(dates).toEqual(datesSorted)
-    })
+      document.body.innerHTML = BillsUI({ data: bills });
+      const dates = screen
+        .getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i)
+        .map((a) => a.innerHTML);
+      const antiChrono = (a, b) => (a < b ? 1 : -1);
+      const datesSorted = [...dates].sort(antiChrono);
+      expect(dates).toEqual(datesSorted);
+    });
+  });
+  describe("When I click on new bill", () => {
+    test("Then i'm redirect to new bill page", () => {
+      document.body.innerHTML = BillsUI({ data: bills });
+
+      Object.defineProperty(window, "localStorage", { value: localStorageMock });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+        })
+      );
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+
+      const billsManager = new Bills({
+        document,
+        onNavigate,
+        store: null,
+        localStorage: window.localStorage,
+      });
+
+      const buttonNewBill = screen.getByTestId("btn-new-bill");
+      const handleClickNewBill = jest.fn(billsManager.handleClickNewBill());
+      buttonNewBill.addEventListener("click", handleClickNewBill);
+      fireEvent.click(buttonNewBill);
+      expect(handleClickNewBill).toHaveBeenCalled();
+      const newBillsPage = screen.getByText("Envoyer une note de frais");
+      expect(newBillsPage).toBeInTheDocument();
+    });
   });
 });
 
@@ -86,14 +120,14 @@ describe("When I click on the eye icon of a bill", () => {
 // test d'intégration GET
 describe("Given I am a user connected as Employee", () => {
   describe("When I navigate to bills", () => {
-    test("fetches bills from mock API GET", async () => {
+    test("fetches bills from mock API GET", () => {
       localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "a@a" }));
       const root = document.createElement("div");
       root.setAttribute("id", "root");
       document.body.append(root);
       router();
       window.onNavigate(ROUTES_PATH.Bills);
-      await waitFor(() => screen.getByText("Mes notes de frais"));
+      waitFor(() => screen.getByText("Mes notes de frais"));
       expect(screen.getByTestId("tbody")).toBeTruthy();
     });
     describe("When an error occurs on API", () => {
@@ -122,7 +156,7 @@ describe("Given I am a user connected as Employee", () => {
         });
         window.onNavigate(ROUTES_PATH.Bills);
         await new Promise(process.nextTick);
-        const message = await screen.getByText(/Erreur 404/);
+        const message = screen.getByText(/Erreur 404/);
         expect(message).toBeTruthy();
       });
 
@@ -137,7 +171,7 @@ describe("Given I am a user connected as Employee", () => {
 
         window.onNavigate(ROUTES_PATH.Bills);
         await new Promise(process.nextTick);
-        const message = await screen.getByText(/Erreur 500/);
+        const message = screen.getByText(/Erreur 500/);
         expect(message).toBeTruthy();
       });
     });
