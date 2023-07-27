@@ -6,7 +6,7 @@ import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js";
 import { screen, waitFor, fireEvent } from "@testing-library/dom";
 import "@testing-library/jest-dom/extend-expect";
-import mockStore from "../__mocks__/store.js"
+import mockStore from "../__mocks__/store.js";
 import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import router from "../app/Router.js";
@@ -133,63 +133,57 @@ describe("Given I am a user connected as Employee", () => {
       expect(postSpy).toHaveBeenCalledTimes(1);
       expect(postBills).toStrictEqual(bill);
     });
-		describe("When an error occurs on API", () => {
-			beforeEach(() => {
-				window.localStorage.setItem(
-					"user",
-					JSON.stringify({
-						type: "Employee",
-					})
-				);
+    describe("When an error occurs on API", () => {
+      beforeEach(() => {
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+          })
+        );
 
-				document.body.innerHTML = NewBillUI();
+        document.body.innerHTML = NewBillUI();
+      });
+      test("Add bills from an API and fails with 404 message error", async () => {
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
 
-				const onNavigate = (pathname) => {
-					document.body.innerHTML = ROUTES({ pathname });
-				};
-			});
-			test("Add bills from an API and fails with 404 message error", async () => {
-				const postSpy = jest.spyOn(console, "error");
+        const postSpy = jest.spyOn(console, "error");
 
-				const store = {
-					bills: jest.fn(() => newBill.store),
-					create: jest.fn(() => Promise.resolve({})),
-					update: jest.fn(() => Promise.reject(new Error("404"))),
-				};
+        const store = {
+          bills: jest.fn(() => newBill.store), 
+          update: jest.fn(() => Promise.reject(new Error("404"))),
+        };
+        const newBill = new NewBill({ document, onNavigate, store, localStorage });
 
-				const newBill = new NewBill({ document, onNavigate, store, localStorage });
-				newBill.isImgFormatValid = true;
 
-				// Submit form
-				const form = screen.getByTestId("form-new-bill");
-				const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-				form.addEventListener("submit", handleSubmit);
+        const form = screen.getByTestId("form-new-bill");
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
 
-				fireEvent.submit(form);
-				await new Promise(process.nextTick);
-				expect(postSpy).toBeCalledWith(new Error("404"));
-			});
-			test("Add bills from an API and fails with 500 message error", async () => {
-				const postSpy = jest.spyOn(console, "error");
+        fireEvent.submit(form);
+        await waitFor(() => expect(postSpy).toBeCalledWith(new Error("404")));
+        const billsPage = screen.getByText("Mes notes de frais");
+        expect(billsPage).toBeInTheDocument();
+      });
+      test("Add bills from an API and fails with 500 message error", async () => {
+        const postSpy = jest.spyOn(console, "error");
 
-				const store = {
-					bills: jest.fn(() => newBill.store),
-					create: jest.fn(() => Promise.resolve({})),
-					update: jest.fn(() => Promise.reject(new Error("500"))),
-				};
+        const store = {
+          bills: jest.fn(() => newBill.store),
+          update: jest.fn(() => Promise.reject(new Error("500"))),
+        };
 
-				const newBill = new NewBill({ document, onNavigate, store, localStorage });
-				newBill.isImgFormatValid = true;
+        const newBill = new NewBill({ document, onNavigate, store, localStorage });
 
-				// Submit form
-				const form = screen.getByTestId("form-new-bill");
-				const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-				form.addEventListener("submit", handleSubmit);
+        const form = screen.getByTestId("form-new-bill");
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
 
-				fireEvent.submit(form);
-				await new Promise(process.nextTick);
-				expect(postSpy).toBeCalledWith(new Error("500"));
-			});
-		});
-	});
+        fireEvent.submit(form);
+        await waitFor(() => expect(postSpy).toBeCalledWith(new Error("500")));
+      });
+    });
+  });
 });

@@ -23,7 +23,7 @@ export default class NewBill {
     const allowedExtensions = ['.jpg', '.jpeg', '.png'];
     const fileExtension = fileName.toLowerCase().substr(fileName.lastIndexOf('.'));
     
-    // Vérifier l'extension du fichier
+    // Check extension files
     if (allowedExtensions.includes(fileExtension)) {
       const formData = new FormData();
       const email = JSON.parse(localStorage.getItem("user")).email;
