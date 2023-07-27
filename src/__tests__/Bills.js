@@ -121,7 +121,7 @@ describe("When I click on the eye icon of a bill", () => {
 describe("Given I am a user connected as Employee", () => {
   describe("When I navigate to bills", () => {
     test("fetches bills from mock API GET", () => {
-      localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "a@a" }));
+      localStorage.setItem("user", JSON.stringify({ type: "Employee"}));
       const root = document.createElement("div");
       root.setAttribute("id", "root");
       document.body.append(root);
@@ -129,6 +129,8 @@ describe("Given I am a user connected as Employee", () => {
       window.onNavigate(ROUTES_PATH.Bills);
       waitFor(() => screen.getByText("Mes notes de frais"));
       expect(screen.getByTestId("tbody")).toBeTruthy();
+      const iconEyes = screen.getAllByTestId("icon-eye");
+      expect(iconEyes).toHaveLength(4);
     });
     describe("When an error occurs on API", () => {
       beforeEach(() => {
